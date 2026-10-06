@@ -1,32 +1,28 @@
-{
-  "version": 2,
-  "buildCommand": "python api/nltk_setup.py",
-  "outputDirectory": "public",
-  "rewrites": [
-    {
-      "source": "/api/predict",
-      "destination": "/api/index.py"
+﻿{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "frontend": {
+      "root": "public"
     },
-    {
-      "source": "/api",
-      "destination": "/api/index.py"
-    }
-  ],
-  "functions": {
-    "api/index.py": {
-      "includeFiles": "models/**,src/**,nltk_data/**",
-      "maxDuration": 30,
-      "memory": 512
+    "api": {
+      "root": "api",
+      "runtime": "python",
+      "buildCommand": "python nltk_setup.py",
+      "includeFiles": [
+        "../models/**",
+        "../src/**",
+        "../nltk_data/**"
+      ]
     }
   },
-  "headers": [
+  "rewrites": [
     {
       "source": "/api/(.*)",
-      "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, OPTIONS" },
-        { "key": "Access-Control-Allow-Headers", "value": "Content-Type" }
-      ]
+      "destination": { "service": "api" }
+    },
+    {
+      "source": "/(.*)",
+      "destination": { "service": "frontend" }
     }
   ]
 }
