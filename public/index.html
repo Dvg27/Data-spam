@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SpamGuard AI — High-Performance SMS Spam Classifier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page-glow"></div>
+  
+  <div class="container">
+    <!-- Header -->
+    <header class="hero-header">
+      <div class="badge-row">
+        <span class="pill-badge pill-purple">🛡️ Dual-Engine ML Classifier</span>
+        <span class="pill-badge pill-blue">98.4% Test Accuracy</span>
+        <span class="pill-badge pill-green">Vercel Serverless Ready</span>
+      </div>
+      <h1 class="hero-title">SpamGuard <span class="gradient-text">AI</span></h1>
+      <p class="hero-subtitle">
+        High-performance SMS spam & phishing detection powered by TF-IDF n-grams, 14 engineered structural features, and Multinomial Naive Bayes.
+      </p>
+    </header>
+
+    <!-- Main Grid -->
+    <main class="main-layout">
+      <!-- Input Column -->
+      <section class="card input-card">
+        <div class="card-header">
+          <div class="header-icon">✉️</div>
+          <div>
+            <h2>SMS Message Analysis</h2>
+            <p class="card-desc">Type or paste an SMS message below, or pick a sample scenario.</p>
+          </div>
+        </div>
+
+        <div class="input-wrapper">
+          <textarea
+            id="messageInput"
+            placeholder="Type or paste any SMS text here to inspect..."
+            rows="5"
+          ></textarea>
+          
+          <div class="input-meta">
+            <div class="meta-counters">
+              <span>Chars: <strong id="charCount">0</strong></span>
+              <span>Words: <strong id="wordCount">0</strong></span>
+              <span id="quickAlert" class="quick-alert"></span>
+            </div>
+            <button id="clearBtn" class="btn-ghost" title="Clear text">Clear</button>
+          </div>
+        </div>
+
+        <!-- Quick Samples -->
+        <div class="sample-section">
+          <span class="sample-label">Try instant samples:</span>
+          <div class="sample-pills">
+            <button class="sample-btn" data-text="URGENT: Your Wells Fargo account has been locked. Verify immediately at http://wf-sec-auth.cc/login or card will be cancelled.">
+              🚨 Bank Phishing
+            </button>
+            <button class="sample-btn" data-text="Congratulations! You've won a $1,000 Walmart Gift Card! Claim now: http://bit.ly/claim-wm-card-now">
+              🎁 Lottery Scam
+            </button>
+            <button class="sample-btn" data-text="Hey Alex! Are we still meeting for coffee at Starbucks around 3pm today? Let me know!">
+              ☕ Casual Chat (Ham)
+            </button>
+            <button class="sample-btn" data-text="Your Amazon package #93821 has arrived at your front porch. Thank you for shopping with us.">
+              📦 Order Notice (Ham)
+            </button>
+            <button class="sample-btn" data-text="FREE RINGTONE text YES to 80082 to claim your free polyphonic ringtone! Standard network charges apply.">
+              📱 Ringtone Spam
+            </button>
+          </div>
+        </div>
+
+        <button id="analyzeBtn" class="btn-primary">
+          <span class="btn-text">Analyze Message</span>
+          <span class="btn-loader spinner" style="display: none;"></span>
+        </button>
+        <p class="shortcut-hint">Tip: Press <kbd>Ctrl</kbd> + <kbd>Enter</kbd> to analyze</p>
+      </section>
+
+      <!-- Results Column -->
+      <section class="card results-card" id="resultsCard">
+        <div class="card-header">
+          <div class="header-icon">📊</div>
+          <div>
+            <h2>Classification Intelligence</h2>
+            <p class="card-desc">Live inference results, Bayesian probabilities, and structural signals.</p>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <h3>Ready for Inspection</h3>
+          <p>Enter a message on the left and click <strong>Analyze Message</strong> to view detailed classification metrics.</p>
+        </div>
+
+        <!-- Populated Results -->
+        <div id="resultsContent" style="display: none;">
+          <!-- Prediction Banner -->
+          <div id="verdictBanner" class="verdict-banner">
+            <div class="verdict-icon" id="verdictIcon">🚨</div>
+            <div class="verdict-info">
+              <span class="verdict-tag" id="verdictTag">SPAM DETECTED</span>
+              <div class="confidence-text">
+                Confidence: <strong id="confidenceVal">99.8%</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Probability Bars -->
+          <div class="prob-section">
+            <div class="prob-row">
+              <div class="prob-header">
+                <span>🛡️ Legitimate (Ham) Probability</span>
+                <strong id="hamProbText">0.2%</strong>
+              </div>
+              <div class="progress-bar-bg">
+                <div id="hamProgressBar" class="progress-bar-fill fill-ham" style="width: 0.2%;"></div>
+              </div>
+            </div>
+
+            <div class="prob-row">
+              <div class="prob-header">
+                <span>⚠️ Spam / Phishing Probability</span>
+                <strong id="spamProbText">99.8%</strong>
+              </div>
+              <div class="progress-bar-bg">
+                <div id="spamProgressBar" class="progress-bar-fill fill-spam" style="width: 99.8%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Indicators List -->
+          <div class="indicators-box">
+            <h4>Detected Risk Indicators</h4>
+            <div id="indicatorsList" class="indicators-list">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Feature Chips Grid -->
+          <div class="features-box">
+            <h4>Extracted Structural Features (14 Dimensions)</h4>
+            <div id="featuresGrid" class="features-grid">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Preprocessed NLP View -->
+          <div class="nlp-box">
+            <details>
+              <summary>🔬 View Preprocessed NLP Tokens</summary>
+              <div class="nlp-content">
+                <p>Cleaned & stemmed text fed into TF-IDF vectorizer:</p>
+                <code id="cleanedTextDisplay"></code>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Developer API Section -->
+    <section class="card api-docs-card">
+      <div class="api-docs-header">
+        <div>
+          <h3>🚀 REST API Access</h3>
+          <p>This deployment provides a live serverless API for integration into apps, bots, and backend services.</p>
+        </div>
+        <span class="endpoint-pill">POST /api/predict</span>
+      </div>
+      <div class="code-snippet-box">
+        <pre><code>curl -X POST https://your-project.vercel.app/api/predict \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Urgent! Claim your free $500 gift voucher now at http://gift-win.biz"}'</code></pre>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>SpamGuard AI — Built with Scikit-Learn, TF-IDF & Multinomial Naive Bayes. Deployable on Vercel & Streamlit Cloud.</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
