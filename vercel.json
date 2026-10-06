@@ -1,16 +1,32 @@
 {
   "version": 2,
+  "buildCommand": "python api/nltk_setup.py",
+  "outputDirectory": "public",
   "rewrites": [
     {
-      "source": "/api/(.*)",
+      "source": "/api/predict",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/api",
       "destination": "/api/index.py"
     }
   ],
   "functions": {
-    "api/*.py": {
-      "includeFiles": "models/**,src/**",
-      "maxDuration": 15
+    "api/index.py": {
+      "includeFiles": "models/**,src/**,nltk_data/**",
+      "maxDuration": 30,
+      "memory": 512
     }
-  }
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type" }
+      ]
+    }
+  ]
 }
-

@@ -1,12 +1,24 @@
+"""
+Vercel Serverless Function Handler for SpamGuard AI SMS Classifier.
+Supports GET (health/info), POST (SMS prediction), and OPTIONS (CORS preflight).
+"""
 from http.server import BaseHTTPRequestHandler
 import json
 import os
 import sys
+import nltk
 
-# Ensure repository root is on sys.path
+# ---------------------------------------------------------------------------
+# Path setup — ensure project root and bundled nltk_data are on the right paths
+# ---------------------------------------------------------------------------
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
+
+# Point NLTK at the bundled data directory (included via vercel.json includeFiles)
+NLTK_DATA_DIR = os.path.join(BASE_DIR, "nltk_data")
+if os.path.isdir(NLTK_DATA_DIR) and NLTK_DATA_DIR not in nltk.data.path:
+    nltk.data.path.insert(0, NLTK_DATA_DIR)
 
 from src.prediction import predict_sms
 
